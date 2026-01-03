@@ -8,6 +8,7 @@ import Simulator from './pages/Simulator'
 import Team from './pages/Team'
 import Technology from './pages/Technology'
 
+
 const DebugFallback = () => (
   <div className="p-6 text-sm text-white">DebugFallback Rendered</div>
 )

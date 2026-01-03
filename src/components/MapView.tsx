@@ -5,7 +5,7 @@ import type {
   SimulationConfig,
 } from '../engine/stateMachine'
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibW5qb29yZWFsIiwiYSI6ImNtanh3bW8wejA3MWczZ3Njd3YzNGx4c3gifQ.0XOOtWaN9HUDaDAy4dg9KApk.eyJ1IjoibW5qb29yZWFsIiwiYSI6ImNtanh3ZHNqejU3bzUza3E2b3d1MHRiYXQifQ.TGHjMJx6KfzR-MeXzC9C0A'
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
 
 interface MapViewProps {
   config: SimulationConfig
@@ -34,7 +34,10 @@ const normalizePoints = (points: Array<{ x: number; y: number }>) => {
   const padding = 120
   const width = maxX - minX || 1
   const height = maxY - minY || 1
-  const scale = Math.min((1000 - padding * 2) / width, (1000 - padding * 2) / height)
+  const scale = Math.min(
+    (1000 - padding * 2) / width,
+    (1000 - padding * 2) / height,
+  )
 
   return points.map((point) => ({
     x: (point.x - minX) * scale + padding,
@@ -46,8 +49,8 @@ const MapView = ({ config, withSamples, withoutSamples, mode }: MapViewProps) =>
   const mapRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    if (!mapRef.current) return undefined
-    if (MAPBOX_TOKEN === 'YOUR_MAPBOX_ACCESS_TOKEN') return undefined
+    if (!mapRef.current) return
+    if (!MAPBOX_TOKEN) return
 
     let map: import('mapbox-gl').Map | null = null
     let cancelled = false
@@ -73,7 +76,7 @@ const MapView = ({ config, withSamples, withoutSamples, mode }: MapViewProps) =>
       cancelled = true
       map?.remove()
     }
-  }, [])
+  }, [MAPBOX_TOKEN])
 
   const truePoints = useMemo(
     () => normalizePoints(withSamples.map((sample) => sample.truePos)),
@@ -97,7 +100,7 @@ const MapView = ({ config, withSamples, withoutSamples, mode }: MapViewProps) =>
   return (
     <div className="relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-slate-900/40">
       <div ref={mapRef} className="absolute inset-0" />
-      {MAPBOX_TOKEN === 'YOUR_MAPBOX_ACCESS_TOKEN' && (
+      {!MAPBOX_TOKEN && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900/70 to-slate-950/80 text-xs uppercase tracking-[0.3em] text-white/60">
           Add Mapbox Token
         </div>
